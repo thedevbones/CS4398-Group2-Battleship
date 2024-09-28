@@ -1,12 +1,24 @@
 {
-  "name": "cs4398-group2-battleship",
+  "name": "battleship",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Battleship game using GopherGFX and Vite",
+  "author": "CS4398 Group 2",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "gophergfx": "github:illusioneering/GopherGfx"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "vite": "^3.1.0",
+    "vite-plugin-glsl": "^0.3.0",
+    "esbuild-plugin-glsl": "^1.1.0",
+    "eslint": "^8.23.0",
+    "javascript-obfuscator": "^4.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build && javascript-obfuscator ./dist/index.js --output ./dist/index.js --simplify false",
+    "preview": "vite preview"
+  }
 }
