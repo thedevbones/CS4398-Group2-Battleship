@@ -1,5 +1,5 @@
-import * as gfx from 'gophergfx'
-
+import * as gfx from 'gophergfx';
+import Ship from './Ship';
 
 export class App extends gfx.GfxApp {
     constructor() {
