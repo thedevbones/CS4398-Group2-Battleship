@@ -11,21 +11,21 @@ class Ship {
         this.sunk = false;
     }
 
-    hit(x:number, y:number) {
+    hit(x:number, y:number): void {
         this.hitArray[x][y] = 1;
     }
 
-    isSunk() {
+    isSunk(): boolean {
         let sunkChecker = true;
 
         // iterate through columns
-        for (let i in this.hit) {
+        for (let i in this.hitArray) {
 
             // iterate through column i's rows
-            for (let j in this.hit[i]) {
+            for (let j in this.hitArray[i]) {
 
                 // if any square is not hit, ship is not sunk
-                if (this.hit[i][j] == 0) {
+                if (this.hitArray[i][j] == 0) {
                     sunkChecker = false;
                 }
             }
