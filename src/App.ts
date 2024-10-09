@@ -31,13 +31,15 @@ export class App extends gfx.GfxApp {
         const numRows = 10;
         const numCols = 10;
         const cellSize = 0.1;
+        const gridOffsetX = -(numCols * cellSize) / 2;
+        const gridOffsetY = -(numRows * cellSize) / 2;
 
         // vertical lines
         for (let i = 0; i <= numCols; i++) {
             const line = new gfx.Line2();
             line.setVertices([
-                i * cellSize, 0,
-                i * cellSize, numRows * cellSize
+                i * cellSize + gridOffsetX, gridOffsetY,
+                i * cellSize + gridOffsetX, numRows * cellSize + gridOffsetY
             ]);
             this.scene.add(line);
         }
@@ -46,11 +48,12 @@ export class App extends gfx.GfxApp {
         for (let j = 0; j <= numRows; j++) {
             const line = new gfx.Line2();
             line.setVertices([
-                0, j * cellSize,
-                numCols * cellSize, j * cellSize
+                gridOffsetX, j * cellSize + gridOffsetY,
+                numCols * cellSize + gridOffsetX, j * cellSize + gridOffsetY
             ]);
             this.scene.add(line);
         }
+
     }
 
     update(deltaTime: number): void {
