@@ -26,6 +26,31 @@ export class App extends gfx.GfxApp {
             const enemyShip = new Ship(length, 1); // Assuming width is always 1
             this.aiShips.push(enemyShip);
         }
+
+        // Create grid
+        const numRows = 10;
+        const numCols = 10;
+        const cellSize = 0.1;
+
+        // vertical lines
+        for (let i = 0; i <= numCols; i++) {
+            const line = new gfx.Line2();
+            line.setVertices([
+                i * cellSize, 0,
+                i * cellSize, numRows * cellSize
+            ]);
+            this.scene.add(line);
+        }
+
+        // horizontal lines
+        for (let j = 0; j <= numRows; j++) {
+            const line = new gfx.Line2();
+            line.setVertices([
+                0, j * cellSize,
+                numCols * cellSize, j * cellSize
+            ]);
+            this.scene.add(line);
+        }
     }
 
     update(deltaTime: number): void {
