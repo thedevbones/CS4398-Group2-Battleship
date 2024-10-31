@@ -10,7 +10,8 @@ class Coordinate {
     /*
         function isValid(num, num, num, num)
 
-        Return:    bool    indicates if this Coordinate is valid point on current map
+        Return type: bool
+        Return value: Indicates if this Coordinate is valid point on current map
 
         Parameters:
             minX    Lowest x-value of map grid
@@ -32,6 +33,14 @@ class Coordinate {
         return result;
     }
 
+    /*
+        function getTuple()
+
+        Return type: number[]
+        Return value: 2 values, x and y, indicating position of coordinate
+
+        Parameters: none
+    */
     getTuple() {
         return [this.x,this.y];
     }
