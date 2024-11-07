@@ -11,7 +11,9 @@ export class App extends gfx.GfxApp {
         this.aiShips = [];
     }
 
-    createScene(): void {
+    createScene(): void {   
+        // Set background color
+        this.renderer.background.set(0.5, 0.5, 0.9, 1);
         // Define ship lengths
         const shipLengths = [5, 4, 3, 3, 2];
 
