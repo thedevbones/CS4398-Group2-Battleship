@@ -47,6 +47,17 @@ export class App extends gfx.GfxApp {
         const gridOffsetX = -(numCols * cellSize) / 2;
         const gridOffsetY = -(numRows * cellSize) / 2;
 
+        // Create grid of water
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                let waterTile = new gfx.Mesh2();
+                waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
+                waterTile.position.set(i * 0.1 - 0.45, j * 0.1 - 0.45);
+                waterTile.material = this.waterMaterial;
+                this.scene.add(waterTile);
+            }
+        }
+
         // vertical lines
         for (let i = 0; i <= numCols; i++) {
             const line = new gfx.Line2();
@@ -65,18 +76,6 @@ export class App extends gfx.GfxApp {
                 numCols * cellSize + gridOffsetX, j * cellSize + gridOffsetY
             ]);
             this.scene.add(line);
-        }
-
-
-        // Create grid of water
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                let waterTile = new gfx.Mesh2();
-                waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
-                waterTile.position.set(i * 0.1, j * 0.1);
-                waterTile.material = this.waterMaterial;
-                this.scene.add(waterTile);
-            }
         }
     }
 
