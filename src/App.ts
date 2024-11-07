@@ -40,6 +40,34 @@ export class App extends gfx.GfxApp {
             this.aiShips.push(enemyShip);
         }
 
+        // Create grid
+        const numRows = 10;
+        const numCols = 10;
+        const cellSize = 0.1;
+        const gridOffsetX = -(numCols * cellSize) / 2;
+        const gridOffsetY = -(numRows * cellSize) / 2;
+
+        // vertical lines
+        for (let i = 0; i <= numCols; i++) {
+            const line = new gfx.Line2();
+            line.setVertices([
+                i * cellSize + gridOffsetX, gridOffsetY,
+                i * cellSize + gridOffsetX, numRows * cellSize + gridOffsetY
+            ]);
+            this.scene.add(line);
+        }
+
+        // horizontal lines
+        for (let j = 0; j <= numRows; j++) {
+            const line = new gfx.Line2();
+            line.setVertices([
+                gridOffsetX, j * cellSize + gridOffsetY,
+                numCols * cellSize + gridOffsetX, j * cellSize + gridOffsetY
+            ]);
+            this.scene.add(line);
+        }
+
+
         // Create grid of water
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
