@@ -47,6 +47,8 @@ export class App extends gfx.GfxApp {
         const gridY = clickY / this.map.getLength();
 
         const clickCoordinate = new Coordinate(gridX, gridY);
+        
+        //debug
         console.log(clickCoordinate);
     } 
 }
