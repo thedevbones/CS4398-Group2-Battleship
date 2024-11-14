@@ -1,6 +1,8 @@
+import Map from './Map'
+
 class Coordinate {
-    x: number;
-    y: number;
+    private x: number;
+    private y: number;
   
     constructor(X: number, Y: number) {
       this.x = X;
@@ -8,7 +10,7 @@ class Coordinate {
     }
 
     /*
-        function isValid(num, num, num, num)
+        isValid(num, num, num, num)
 
         Return type: bool
         Return value: Indicates if this Coordinate is valid point on current map
@@ -43,6 +45,14 @@ class Coordinate {
     */
     getTuple() {
         return [this.x,this.y];
+    }
+
+    getX() {
+      return this.x;
+    }
+
+    getY() {
+      return this.y;
     }
 
   } export default Coordinate;
