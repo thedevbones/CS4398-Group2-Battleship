@@ -45,4 +45,4 @@ class Coordinate {
         return [this.x,this.y];
     }
 
-  }
+  } export default Coordinate;
