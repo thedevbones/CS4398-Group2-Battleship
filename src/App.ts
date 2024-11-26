@@ -1,11 +1,15 @@
 import * as gfx from 'gophergfx';
 import Ship from './Ship';
+import Map from './Map';
+import Coordinate from './Coordinate'
+import {EasyOpponent, MedOpponent, HardOpponent} from './Opponent'
 
 export class App extends gfx.GfxApp {
     private playerShips: Ship[];
     private aiShips: Ship[];
     private waterMaterial: gfx.Material2;
     private waterTextures: gfx.Texture[];
+    private map: Map;
 
     constructor() {
         super();
@@ -17,6 +21,7 @@ export class App extends gfx.GfxApp {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
         console.log(this.waterTextures);
+        this.map = new Map(4, 4);
     }
 
     createScene(): void {       
@@ -86,6 +91,21 @@ export class App extends gfx.GfxApp {
 
         // Game logic goes here
     }
+
+    onMouseDown(event: MouseEvent): void {
+        // get click tuple in screen coordinates
+        const clickX = event.x;
+        const clickY = event.y;
+
+        // convert to coordinate of map grid
+        const gridX = clickX / this.map.getWidth();
+        const gridY = clickY / this.map.getLength();
+
+        const clickCoordinate = new Coordinate(gridX, gridY);
+        
+        //debug
+        console.log(clickCoordinate);
+    } 
 }
 
 const app = new App();
