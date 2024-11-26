@@ -1,8 +1,7 @@
 import * as gfx from 'gophergfx';
 import Ship from './Ship';
 import Map from './Map';
-import Coordinate from './Coordinate'
-import {EasyOpponent, MedOpponent, HardOpponent} from './Opponent'
+import Coordinate from './Coordinate';
 
 export class App extends gfx.GfxApp {
     private playerShips: Ship[];
@@ -21,12 +20,12 @@ export class App extends gfx.GfxApp {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
         console.log(this.waterTextures);
-        this.map = new Map(4, 4);
+        this.map = new Map(10, 10);
     }
 
     createScene(): void {       
         // Set background color
-        this.renderer.background.set(0.5, 0.5, 0.9, 1);
+        this.renderer.background.set(0.1, 0.1, 0.1, 1);
         this.waterMaterial.texture = this.waterTextures[0];
         this.waterMaterial.drawMode = 5
 
@@ -46,18 +45,18 @@ export class App extends gfx.GfxApp {
         }
 
         // Create grid
-        const numRows = 10;
-        const numCols = 10;
+        const numRows = this.map.getWidth();
+        const numCols = this.map.getLength();
         const cellSize = 0.1;
         const gridOffsetX = -(numCols * cellSize) / 2;
         const gridOffsetY = -(numRows * cellSize) / 2;
 
         // Create grid of water
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
+        for (let i = 0; i < numCols; i++) {
+            for (let j = 0; j < numRows; j++) {
                 let waterTile = new gfx.Mesh2();
                 waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
-                waterTile.position.set(i * 0.1 - 0.45, j * 0.1 - 0.45);
+                waterTile.position.set(i * cellSize + gridOffsetX + 0.05, j * cellSize + gridOffsetY + 0.05);
                 waterTile.material = this.waterMaterial;
                 this.scene.add(waterTile);
             }
