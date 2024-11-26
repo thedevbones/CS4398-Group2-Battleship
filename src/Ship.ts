@@ -22,7 +22,7 @@ class Ship {
         for (let i in this.hitArray) {
 
             // iterate through column i's rows
-            for (let j in this.hitArray[i]) {
+            for (let j in this.hitArray) {
 
                 // if any square is not hit, ship is not sunk
                 if (this.hitArray[i][j] == 0) {
