@@ -26,6 +26,20 @@ export class App extends gfx.GfxApp {
     createScene(): void {       
         // Set background color
         this.renderer.background.set(0.1, 0.1, 0.1, 1);
+
+        // Create title header
+        const titleText = new gfx.Text("BATTLESHIP", 90, 10, "Arial", gfx.Color.WHITE);
+        let title = new gfx.Mesh2();
+        title = gfx.Geometry2Factory.createBox(3, 0.5);
+        title.position.set(0, 0.6);
+        title.material.texture = titleText;
+        title.material.texture.setMagFilter(false);
+        this.scene.add(title);
+
+        // TODO: Create a difficulty and start button
+        // and move this code after the onClick event
+
+        /*
         this.waterMaterial.texture = this.waterTextures[0];
         this.waterMaterial.drawMode = 5
 
@@ -81,6 +95,7 @@ export class App extends gfx.GfxApp {
             ]);
             this.scene.add(line);
         }
+        */
     }
 
     update(deltaTime: number): void {
