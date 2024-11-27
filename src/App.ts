@@ -14,6 +14,7 @@ export class App extends gfx.GfxApp {
     private title: gfx.Mesh2;
     private startButton: Button;
     private difficultyButton: Button;
+    private selectedShip: Ship | null;
 
     constructor() {
         super();
@@ -28,6 +29,7 @@ export class App extends gfx.GfxApp {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
         this.map = new Map(10, 10);
+        this.selectedShip = null;
     }
 
     createScene(): void {       
@@ -80,10 +82,6 @@ export class App extends gfx.GfxApp {
             default:
                 opponent = new EasyOpponent();
         }
-
-        // Set water material
-        this.waterMaterial.texture = this.waterTextures[0];
-        this.waterMaterial.drawMode = 5
 
         // Define ship lengths
         const shipLengths = [5, 4, 3, 3, 2];
@@ -139,6 +137,9 @@ export class App extends gfx.GfxApp {
         }
 
         // Add water tiles to grid
+        this.waterMaterial.texture = this.waterTextures[0];
+        this.waterMaterial.drawMode = 5
+        
         for (let i = 0; i < numCols; i++) {
             for (let j = 0; j < numRows; j++) {
                 let waterTile = new gfx.Mesh2();
@@ -157,11 +158,6 @@ export class App extends gfx.GfxApp {
     }
 
     onMouseDown(event: MouseEvent): void {
-        // Check if mouse collides with any button mesh
-        const mousePosition = new gfx.Vector2(event.clientX, event.clientY);
-        this.startButton.checkMouseOverButton(mousePosition);
-        this.difficultyButton.checkMouseOverButton(mousePosition);
-
         // get click tuple in screen coordinates
         const clickX = event.x;
         const clickY = event.y;
@@ -170,10 +166,42 @@ export class App extends gfx.GfxApp {
         const gridX = clickX / this.map.getWidth();
         const gridY = clickY / this.map.getLength();
 
+        // Check if mouse collides with any button mesh
+        this.startButton.checkClick(new gfx.Vector2(clickX, clickY));
+        this.difficultyButton.checkClick(new gfx.Vector2(clickX, clickY));
+
+        // Check if a ship is clicked
+        for (let ship of app.playerShips) {
+            if (ship.checkClick(new gfx.Vector2(clickX, clickY))) {
+                if (this.selectedShip === ship) {
+                    this.selectedShip = null; // Deselect the ship
+                } else {
+                    this.selectedShip = ship; // Select the ship
+                }
+                return;
+            }
+        }
+
+        // If a ship is selected, move it to the new position
+        if (this.selectedShip) {
+            const clickX = (event.clientX / window.innerWidth) * 2 - 1;
+            const clickY = -(event.clientY / window.innerHeight) * 2 + 1;
+            this.selectedShip.getMesh().position.set(gridX, gridY);
+            this.selectedShip = null; // Deselect after moving
+        }
+
         const clickCoordinate = new Coordinate(gridX, gridY);
         
         //debug
         console.log(clickCoordinate);
+    }
+
+    onMouseMove(event: MouseEvent): void {
+        if (this.selectedShip) {
+            const clickX = (event.clientX / window.innerWidth) * 2 - 1;
+            const clickY = -(event.clientY / window.innerHeight) * 2 + 1;
+            this.selectedShip.getMesh().position.set(clickX, clickY);
+        }
     }
 
     public static start(): void {

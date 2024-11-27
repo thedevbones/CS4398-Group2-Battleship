@@ -44,7 +44,7 @@ class Button {
         this.mesh.position.set(x, y);
     }
 
-    public checkMouseOverButton(mousePosition: gfx.Vector2): void {
+    public checkClick(mousePosition: gfx.Vector2): void {
         if (!this.enabled) {
             return;
         }
