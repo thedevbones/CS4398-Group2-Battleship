@@ -2,6 +2,7 @@ import * as gfx from 'gophergfx';
 import Ship from './Ship';
 import Map from './Map';
 import Coordinate from './Coordinate';
+import Button from './Button';
 
 export class App extends gfx.GfxApp {
     private playerShips: Ship[];
@@ -35,6 +36,11 @@ export class App extends gfx.GfxApp {
         title.material.texture = titleText;
         title.material.texture.setMagFilter(false);
         this.scene.add(title);
+
+        // Create start button
+        const startButton = new Button("START", 2, 0.25);
+        startButton.setPosition(0, 0);
+        this.scene.add(startButton.getMesh());
 
         // TODO: Create a difficulty and start button
         // and move this code after the onClick event
