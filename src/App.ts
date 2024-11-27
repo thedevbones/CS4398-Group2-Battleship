@@ -176,7 +176,7 @@ export class App extends gfx.GfxApp {
             if (ship.checkClick(mousePosition)) {
                 if (this.selectedShip === ship) {
                     this.selectedShip.snapToGrid();
-                    this.selectedShip = null; // Deselect the ship
+                    if (this.selectedShip.isInBounds()) { this.selectedShip = null; } // Deselect the ship
                 } else if (this.selectedShip === null) {
                     this.selectedShip = ship; // Select the ship
                 }
@@ -201,6 +201,13 @@ export class App extends gfx.GfxApp {
             const clickX = (event.clientX / window.innerWidth) * 2 - 1;
             const clickY = -(event.clientY / window.innerHeight) * 2 + 1;
             this.selectedShip.getMesh().position.set(clickX, clickY);
+        }
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        // If user presses 'r', rotate the selected ship
+        if (event.key === 'r' && this.selectedShip) {
+            this.selectedShip.rotate();
         }
     }
 
