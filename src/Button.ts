@@ -49,6 +49,8 @@ class Button {
             return;
         }
 
+        // TODO: Fix bounds overlap, currently button is clickable even if mouse is outside of bounds
+
         const bounds = this.mesh.worldBoundingBox;
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;

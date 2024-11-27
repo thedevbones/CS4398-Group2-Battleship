@@ -49,11 +49,6 @@ export class App extends gfx.GfxApp {
         // Create difficulty button
         this.difficultyButton.setPosition(0, -0.5);
         this.scene.add(this.difficultyButton.getMesh());
-
-        // TODO: Create a difficulty and start button
-        // and move this code after the onClick event
-
-        
     }
 
     update(deltaTime: number): void {
@@ -105,45 +100,56 @@ export class App extends gfx.GfxApp {
             this.aiShips.push(enemyShip);
         }
 
-        // Create grid
+        // Create grid and grid values
+        const grid = new gfx.Node2();
         const numRows = this.map.getWidth();
         const numCols = this.map.getLength();
         const cellSize = 0.1;
         const gridOffsetX = -(numCols * cellSize) / 2;
-        const gridOffsetY = -(numRows * cellSize) / 2;
+        const gridOffsetY = -(numRows * cellSize) / 2 - 0.2;
 
-        // vertical lines
+        // Add vertical lines to grid
         for (let i = 0; i <= numCols; i++) {    
             const line = new gfx.Line2();
+            line.layer = -1;
             line.setVertices([
                 i * cellSize + gridOffsetX, gridOffsetY,
                 i * cellSize + gridOffsetX, numRows * cellSize + gridOffsetY
             ]);
-            this.scene.add(line);
+            setTimeout(() => {  
+                grid.add(line);
+            }, 50 * i);
         }
 
-        // horizontal lines
+        // Add horizontal lines to grid
         for (let j = 0; j <= numRows; j++) {
             const line = new gfx.Line2();
+            line.layer = -1;
             line.setVertices([
                 gridOffsetX, j * cellSize + gridOffsetY,
                 numCols * cellSize + gridOffsetX, j * cellSize + gridOffsetY
             ]);
-            this.scene.add(line);
+            setTimeout(() => {
+                grid.add(line);
+            }, 50 * j);
         }
 
-        // Create grid of water
+        // Add water tiles to grid
         for (let i = 0; i < numCols; i++) {
             for (let j = 0; j < numRows; j++) {
                 let waterTile = new gfx.Mesh2();
                 waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
                 waterTile.position.set(i * cellSize + gridOffsetX + 0.05, j * cellSize + gridOffsetY + 0.05);
                 waterTile.material = this.waterMaterial;
+                waterTile.layer = 0;
                 setTimeout(() => {
-                    this.scene.add(waterTile);
+                    grid.add(waterTile);
                 }, 50 * (i + j));
+                
             }
         }
+
+        this.scene.add(grid)
     }
 
     onMouseDown(event: MouseEvent): void {
