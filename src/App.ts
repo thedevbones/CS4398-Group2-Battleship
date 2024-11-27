@@ -14,6 +14,7 @@ export class App extends gfx.GfxApp {
     private title: gfx.Mesh2;
     private startButton: Button;
     private difficultyButton: Button;
+    private readyButton: Button;
     private selectedShip: Ship | null;
 
     constructor() {
@@ -25,6 +26,8 @@ export class App extends gfx.GfxApp {
         this.title = gfx.Geometry2Factory.createBox(3, 0.5);
         this.startButton = new Button("START", 2, 0.25);
         this.difficultyButton = new Button("DIFFICULTY: EASY", 2, 0.25);
+        this.readyButton = new Button("READY", 1, 0.1);
+        this.readyButton.setStatus(false);
         for (let i = 1; i < 22; i++) {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
@@ -65,6 +68,11 @@ export class App extends gfx.GfxApp {
         // Remove buttons
         this.startButton.getMesh().remove();
         this.difficultyButton.getMesh().remove();
+
+        // Create ready button
+        this.readyButton.setStatus(true);
+        this.readyButton.setPosition(0.8, -0.6);
+        this.scene.add(this.readyButton.getMesh());
 
         // Initialize oppenent
         let opponent;
@@ -157,6 +165,25 @@ export class App extends gfx.GfxApp {
         this.scene.add(grid)
     }
 
+    ready(): void {
+        // Remove ready button
+        this.readyButton.getMesh().remove();
+
+        // Hide player ships
+        for (let ship of this.playerShips) {
+            ship.getMesh().remove();
+        }
+
+        // Add enemy ships
+        let targetY = 0.25;
+        for (let ship of this.aiShips) {
+            ship.getMesh().position.set(0.8, targetY);
+            ship.getMesh().material.color = gfx.Color.RED;
+            targetY -= 0.2;
+            this.scene.add(ship.getMesh());
+        }
+    }
+
     onMouseDown(event: MouseEvent): void {
         // get click tuple in screen coordinates
         const mousePosition = new gfx.Vector2(event.x, event.y);
@@ -170,6 +197,7 @@ export class App extends gfx.GfxApp {
         // Check if mouse collides with any button mesh
         this.startButton.checkClick(mousePosition);
         this.difficultyButton.checkClick(mousePosition);
+        this.readyButton.checkClick(mousePosition);
 
         // Check if a ship is clicked
         for (let ship of app.playerShips) {
@@ -211,15 +239,31 @@ export class App extends gfx.GfxApp {
         }
     }
 
-    public static start(): void {
+    public static onStart(): void {
         app.loadGame();
     }
 
-    public static changeDifficulty(): void {
+    public static onChangeDifficulty(): void {
         const options = ['EASY', 'MED', 'HARD'];
         let currentDifficulty = app.difficultyButton.getText().split(' ')[1];
         let nextDifficulty = options[(options.indexOf(currentDifficulty) + 1) % options.length];
         app.difficultyButton.setText(`DIFFICULTY: ${nextDifficulty}`);
+    }
+
+    public static onReady(): void {
+        // Check if all ships are placed
+        let allShipsPlaced = true;
+        for (let ship of app.playerShips) {
+            if (!ship.isInBounds()) {
+                allShipsPlaced = false;
+            }
+        }
+
+        if (allShipsPlaced) {
+            app.ready();
+        } else {
+            console.log('Place all ships before starting the game');
+        }
     }
 }
 

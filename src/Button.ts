@@ -44,6 +44,10 @@ class Button {
         this.mesh.position.set(x, y);
     }
 
+    public setStatus(enabled: boolean): void {
+        this.enabled = enabled;
+    }
+
     public checkClick(mousePosition: gfx.Vector2): void {
         if (!this.enabled) {
             return;
@@ -75,14 +79,21 @@ class Button {
             setTimeout(() => {
                 this.mesh.material.texture = new gfx.Text(this.text, 90, 10, "Arial", gfx.Color.WHITE);
                 this.mesh.material.texture.setMagFilter(false);
-                App.start();
+                App.onStart();
             }, 200);
         } else if (this.text.startsWith('DIFFICULTY')) {
             setTimeout(() => {
                 this.mesh.material.texture = new gfx.Text(this.text, 90, 10, "Arial", gfx.Color.WHITE);
                 this.mesh.material.texture.setMagFilter(false);
                 this.enabled = true;
-                App.changeDifficulty();
+                App.onChangeDifficulty();
+            }, 200);
+        } else if (this.text.toLowerCase() === 'ready') {
+            setTimeout(() => {
+                this.mesh.material.texture = new gfx.Text(this.text, 90, 10, "Arial", gfx.Color.WHITE);
+                this.mesh.material.texture.setMagFilter(false);
+                this.enabled = true;
+                App.onReady();
             }, 200);
         }
     }
