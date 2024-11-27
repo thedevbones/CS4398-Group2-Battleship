@@ -1,14 +1,21 @@
+import * as gfx from 'gophergfx';
 class Ship {
     private length: number;
     private width: number;
     private hitArray: number[][];
     private sunk: boolean;
+    private mesh: gfx.Mesh2;
 
     constructor(l:number, w:number) {
         this.length = l;
         this.width = w;
         this.hitArray = Array.from({ length: l }, () => Array<number>(w).fill(0));
         this.sunk = false;
+        this.mesh = gfx.Geometry2Factory.createBox(l * 0.1, w * 0.1);
+    }
+
+    getMesh(): gfx.Mesh2 {
+        return this.mesh;
     }
 
     hit(x:number, y:number): void {

@@ -89,9 +89,13 @@ export class App extends gfx.GfxApp {
         const shipLengths = [5, 4, 3, 3, 2];
 
         // Create player ships
+        let targetY = 0.25;
         for (let length of shipLengths) {
             const playerShip = new Ship(length, 1); // Assuming width is always 1
             this.playerShips.push(playerShip);
+            playerShip.getMesh().position.set(-0.8, targetY);
+            targetY -= 0.2;
+            this.scene.add(playerShip.getMesh());
         }
 
         // Create enemy ships
