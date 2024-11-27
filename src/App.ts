@@ -3,6 +3,7 @@ import Ship from './Ship';
 import Map from './Map';
 import Coordinate from './Coordinate';
 import Button from './Button';
+import { EasyOpponent, MedOpponent, HardOpponent } from './Opponent';
 
 export class App extends gfx.GfxApp {
     private playerShips: Ship[];
@@ -10,6 +11,9 @@ export class App extends gfx.GfxApp {
     private waterMaterial: gfx.Material2;
     private waterTextures: gfx.Texture[];
     private map: Map;
+    private title: gfx.Mesh2;
+    private startButton: Button;
+    private difficultyButton: Button;
 
     constructor() {
         super();
@@ -17,10 +21,12 @@ export class App extends gfx.GfxApp {
         this.aiShips = [];
         this.waterMaterial = new gfx.Material2();
         this.waterTextures = [];
+        this.title = gfx.Geometry2Factory.createBox(3, 0.5);
+        this.startButton = new Button("START", 2, 0.25);
+        this.difficultyButton = new Button("DIFFICULTY: EASY", 2, 0.25);
         for (let i = 1; i < 22; i++) {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
-        console.log(this.waterTextures);
         this.map = new Map(10, 10);
     }
 
@@ -30,27 +36,57 @@ export class App extends gfx.GfxApp {
 
         // Create title header
         const titleText = new gfx.Text("BATTLESHIP", 90, 10, "Arial", gfx.Color.WHITE);
-        let title = new gfx.Mesh2();
-        title = gfx.Geometry2Factory.createBox(3, 0.5);
-        title.position.set(0, 0.6);
-        title.material.texture = titleText;
-        title.material.texture.setMagFilter(false);
-        this.scene.add(title);
+        
+        this.title.position.set(0, 0.7);
+        this.title.material.texture = titleText;
+        this.title.material.texture.setMagFilter(false);
+        this.scene.add(this.title);
 
         // Create start button
-        const startButton = new Button("START", 2, 0.25);
-        startButton.setPosition(0, 0);
-        this.scene.add(startButton.getMesh());
+        this.startButton.setPosition(0, 0);
+        this.scene.add(this.startButton.getMesh());
 
         // Create difficulty button
-        const difficultyButton = new Button("DIFFICULTY: EASY", 2, 0.25);
-        difficultyButton.setPosition(0, -0.5);
-        this.scene.add(difficultyButton.getMesh());
+        this.difficultyButton.setPosition(0, -0.5);
+        this.scene.add(this.difficultyButton.getMesh());
 
         // TODO: Create a difficulty and start button
         // and move this code after the onClick event
 
-        /*
+        
+    }
+
+    update(deltaTime: number): void {
+        // Update water
+        const textureIndex = Math.floor((Date.now() / 60) % this.waterTextures.length);
+        this.waterMaterial.texture = this.waterTextures[textureIndex];
+
+        // Game logic goes here
+    }
+
+    loadGame(): void {
+        // Remove buttons
+        this.startButton.getMesh().remove();
+        this.difficultyButton.getMesh().remove();
+
+        // Initialize oppenent
+        let opponent;
+        let difficulty = this.difficultyButton.getText().split(' ')[1];
+        switch (difficulty) {
+            case 'EASY':
+                opponent = new EasyOpponent();
+                break;
+            case 'MED':
+                opponent = new MedOpponent();
+                break;
+            case 'HARD':
+                opponent = new HardOpponent();
+                break;
+            default:
+                opponent = new EasyOpponent();
+        }
+
+        // Set water material
         this.waterMaterial.texture = this.waterTextures[0];
         this.waterMaterial.drawMode = 5
 
@@ -76,17 +112,6 @@ export class App extends gfx.GfxApp {
         const gridOffsetX = -(numCols * cellSize) / 2;
         const gridOffsetY = -(numRows * cellSize) / 2;
 
-        // Create grid of water
-        for (let i = 0; i < numCols; i++) {
-            for (let j = 0; j < numRows; j++) {
-                let waterTile = new gfx.Mesh2();
-                waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
-                waterTile.position.set(i * cellSize + gridOffsetX + 0.05, j * cellSize + gridOffsetY + 0.05);
-                waterTile.material = this.waterMaterial;
-                this.scene.add(waterTile);
-            }
-        }
-
         // vertical lines
         for (let i = 0; i <= numCols; i++) {    
             const line = new gfx.Line2();
@@ -106,18 +131,27 @@ export class App extends gfx.GfxApp {
             ]);
             this.scene.add(line);
         }
-        */
-    }
 
-    update(deltaTime: number): void {
-        // Update water
-        const textureIndex = Math.floor((Date.now() / 60) % this.waterTextures.length);
-        this.waterMaterial.texture = this.waterTextures[textureIndex];
-
-        // Game logic goes here
+        // Create grid of water
+        for (let i = 0; i < numCols; i++) {
+            for (let j = 0; j < numRows; j++) {
+                let waterTile = new gfx.Mesh2();
+                waterTile = gfx.Geometry2Factory.createBox(0.1, 0.1);
+                waterTile.position.set(i * cellSize + gridOffsetX + 0.05, j * cellSize + gridOffsetY + 0.05);
+                waterTile.material = this.waterMaterial;
+                setTimeout(() => {
+                    this.scene.add(waterTile);
+                }, 50 * (i + j));
+            }
+        }
     }
 
     onMouseDown(event: MouseEvent): void {
+        // Check if mouse collides with any button mesh
+        const mousePosition = new gfx.Vector2(event.clientX, event.clientY);
+        this.startButton.checkMouseOverButton(mousePosition);
+        this.difficultyButton.checkMouseOverButton(mousePosition);
+
         // get click tuple in screen coordinates
         const clickX = event.x;
         const clickY = event.y;
@@ -130,7 +164,18 @@ export class App extends gfx.GfxApp {
         
         //debug
         console.log(clickCoordinate);
-    } 
+    }
+
+    public static start(): void {
+        app.loadGame();
+    }
+
+    public static changeDifficulty(): void {
+        const options = ['EASY', 'MED', 'HARD'];
+        let currentDifficulty = app.difficultyButton.getText().split(' ')[1];
+        let nextDifficulty = options[(options.indexOf(currentDifficulty) + 1) % options.length];
+        app.difficultyButton.setText(`DIFFICULTY: ${nextDifficulty}`);
+    }
 }
 
 const app = new App();
