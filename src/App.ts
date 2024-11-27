@@ -42,6 +42,11 @@ export class App extends gfx.GfxApp {
         startButton.setPosition(0, 0);
         this.scene.add(startButton.getMesh());
 
+        // Create difficulty button
+        const difficultyButton = new Button("DIFFICULTY: EASY", 2, 0.25);
+        difficultyButton.setPosition(0, -0.5);
+        this.scene.add(difficultyButton.getMesh());
+
         // TODO: Create a difficulty and start button
         // and move this code after the onClick event
 
@@ -83,7 +88,7 @@ export class App extends gfx.GfxApp {
         }
 
         // vertical lines
-        for (let i = 0; i <= numCols; i++) {
+        for (let i = 0; i <= numCols; i++) {    
             const line = new gfx.Line2();
             line.setVertices([
                 i * cellSize + gridOffsetX, gridOffsetY,
