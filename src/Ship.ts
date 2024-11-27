@@ -5,6 +5,7 @@ class Ship {
     private hitArray: number[][];
     private sunk: boolean;
     private mesh: gfx.Mesh2;
+    private isHorizontal: boolean;
 
     constructor(l:number, w:number) {
         this.length = l;
@@ -13,6 +14,7 @@ class Ship {
         this.sunk = false;
         this.mesh = gfx.Geometry2Factory.createBox(l * 0.1, w * 0.1);
         this.mesh.layer = -1;
+        this.isHorizontal = true;
     }
 
     getMesh(): gfx.Mesh2 {
@@ -42,9 +44,28 @@ class Ship {
     }
 
     snapToGrid(): void {
-        const gridX = Math.round(this.mesh.position.x * 10) / 10 + 0.05;
-        const gridY = Math.floor(this.mesh.position.y * 10) / 10 + 0.05;
+        // Offset the ship depending on its length and orientation
+        const offsetX = (this.isHorizontal && this.length % 2 == 0) ? 0 : 0.05;
+        const offsetY = (this.isHorizontal || this.length % 2 != 0) ? 0.05 : 0;
+
+        // Snap the ship to the nearest grid position
+        const gridX = Math.round(this.mesh.position.x * 10) / 10 + offsetX;
+        const gridY = Math.floor(this.mesh.position.y * 10) / 10 + offsetY;
+
+        if (!this.isInBounds()) {
+            return;
+        } 
         this.mesh.position.set(gridX, gridY);
+    }
+
+    rotate(): void {
+        this.isHorizontal = !this.isHorizontal;
+        this.mesh.rotation += Math.PI / 2;
+    }
+
+    public isInBounds(): boolean {
+        // TODO: Check if ships is within bounds of the grid
+        return true;
     }
 
     checkClick(mousePosition: gfx.Vector2): boolean {
@@ -56,7 +77,7 @@ class Ship {
         );
         mousePosition = adjustedMousePosition;
 
-        const radius = 0.005;
+        const radius = 0.01;
         const circle = gfx.Geometry2Factory.createCircle(radius);
         circle.position = mousePosition;
         
