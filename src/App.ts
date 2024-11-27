@@ -159,6 +159,7 @@ export class App extends gfx.GfxApp {
 
     onMouseDown(event: MouseEvent): void {
         // get click tuple in screen coordinates
+        const mousePosition = new gfx.Vector2(event.x, event.y);
         const clickX = event.x;
         const clickY = event.y;
 
@@ -167,15 +168,16 @@ export class App extends gfx.GfxApp {
         const gridY = clickY / this.map.getLength();
 
         // Check if mouse collides with any button mesh
-        this.startButton.checkClick(new gfx.Vector2(clickX, clickY));
-        this.difficultyButton.checkClick(new gfx.Vector2(clickX, clickY));
+        this.startButton.checkClick(mousePosition);
+        this.difficultyButton.checkClick(mousePosition);
 
         // Check if a ship is clicked
         for (let ship of app.playerShips) {
-            if (ship.checkClick(new gfx.Vector2(clickX, clickY))) {
+            if (ship.checkClick(mousePosition)) {
                 if (this.selectedShip === ship) {
+                    this.selectedShip.snapToGrid();
                     this.selectedShip = null; // Deselect the ship
-                } else {
+                } else if (this.selectedShip === null) {
                     this.selectedShip = ship; // Select the ship
                 }
                 return;
@@ -184,8 +186,6 @@ export class App extends gfx.GfxApp {
 
         // If a ship is selected, move it to the new position
         if (this.selectedShip) {
-            const clickX = (event.clientX / window.innerWidth) * 2 - 1;
-            const clickY = -(event.clientY / window.innerHeight) * 2 + 1;
             this.selectedShip.getMesh().position.set(gridX, gridY);
             this.selectedShip = null; // Deselect after moving
         }

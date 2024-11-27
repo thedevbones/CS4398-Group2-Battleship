@@ -41,6 +41,12 @@ class Ship {
         return sunkChecker;
     }
 
+    snapToGrid(): void {
+        const gridX = Math.round(this.mesh.position.x * 10) / 10 + 0.05;
+        const gridY = Math.floor(this.mesh.position.y * 10) / 10 + 0.05;
+        this.mesh.position.set(gridX, gridY);
+    }
+
     checkClick(mousePosition: gfx.Vector2): boolean {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
