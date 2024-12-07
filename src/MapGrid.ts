@@ -11,4 +11,12 @@ class MapGrid {
         
     }
 
+    getCols(): number {
+        return this.cols
+    }
+
+    getRows(): number {
+        return this.rows
+    }
+
 } export default MapGrid;
