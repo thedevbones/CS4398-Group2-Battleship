@@ -2,8 +2,6 @@ class Map {
   private length: number;
   private width: number;
 
-
-
   constructor(l:number, w:number) {
     this.length = l;
     this.width = w;
