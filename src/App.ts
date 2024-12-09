@@ -112,8 +112,8 @@ export class App extends gfx.GfxApp {
 
         // Create grid and grid values
         const grid = new gfx.Node2();
-        const numRows = this.map.getWidth();
-        const numCols = this.map.getLength();
+        const numRows = this.map.getY();
+        const numCols = this.map.getX();
         const cellSize = 0.1;
         const gridOffsetX = -(numCols * cellSize) / 2;
         const gridOffsetY = -(numRows * cellSize) / 2 - 0.2;
@@ -191,8 +191,8 @@ export class App extends gfx.GfxApp {
         const clickY = event.y;
 
         // convert to coordinate of map grid
-        const gridX = clickX / this.map.getWidth();
-        const gridY = clickY / this.map.getLength();
+        const gridX = clickX / this.map.getX();
+        const gridY = clickY / this.map.getY();
 
         // Check if mouse collides with any button mesh
         this.startButton.checkClick(mousePosition);

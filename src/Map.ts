@@ -1,10 +1,10 @@
 class Map {
-  private length: number;
-  private width: number;
+  private x: number;
+  private y: number;
 
-  constructor(l:number, w:number) {
-    this.length = l;
-    this.width = w;
+  constructor(x:number, y:number) {
+    this.x = x;
+    this.y = y;
   }
 
   isValid() {
@@ -14,15 +14,27 @@ class Map {
     // max grid size = 30x30
     const maxX = 30;
     const maxY = 30;
+
+    let result = true;
+    if (this.x > maxX) {
+        result = false;
+    } else if (this.y > maxY) {
+        result = false;
+    } else if (this.x < minX || this.x < 1) {
+        result = false;
+    } else if (this.y < minY || this.y < 1) {
+        result = false;
+    }
+    return result;
       
   }
 
-  getWidth() {
-    return this.width;
+  getX() {
+    return this.x;
   }
 
-  getLength() {
-    return this.length;
+  getY() {
+    return this.y;
   }
 
 

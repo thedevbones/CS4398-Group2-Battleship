@@ -21,15 +21,15 @@ class Coordinate {
             maxX    Highest x-value of map grid
             maxY    Highest y-value of map grid
     */
-    isValid(minX: number, minY:number, maxX: number, maxY: number) {
+    isValid(minX: number, minY:number, maxX: number, maxY: number): boolean {
         let result = true;
         if (this.x > maxX) {
             result = false;
         } else if (this.y > maxY) {
             result = false;
-        } else if (this.x < minX) {
+        } else if (this.x < minX || this.x < 0) {
             result = false;
-        } else if (this.y < minY) {
+        } else if (this.y < minY || this.y < 0) {
             result = false;
         }
         return result;
@@ -43,15 +43,15 @@ class Coordinate {
 
         Parameters: none
     */
-    getTuple() {
+    getTuple() : number[] {
         return [this.x,this.y];
     }
 
-    getX() {
+    getX() : number {
       return this.x;
     }
 
-    getY() {
+    getY() : number {
       return this.y;
     }
 
