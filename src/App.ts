@@ -250,9 +250,12 @@ export class App extends gfx.GfxApp {
         const clickCoordinate = new Coordinate(gridX, gridY);
         
         // Check if mouse collides with any button mesh
-        if (!this.shipsPlaced) {
+        if (!this.menuDone && !this.shipsPlaced) {
             this.startButton.checkClick(mousePosition);
             this.difficultyButton.checkClick(mousePosition);
+            return;
+        }
+        if (!this.shipsPlaced) {
             this.readyButton.checkClick(mousePosition);
             return;
         }
@@ -288,13 +291,14 @@ export class App extends gfx.GfxApp {
 
         if (hit == true) {
           this.showHitDecal(clickX, clickY);
+          this.hitSound.play();
         }
         
         if (!this.hitSound.paused) {
             this.hitSound.pause();
             this.hitSound.currentTime = 0;
         }
-        this.hitSound.play();
+        
     }
 
     showHitDecal(x: number, y: number): void {
