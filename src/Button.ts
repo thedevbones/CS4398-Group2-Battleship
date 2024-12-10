@@ -7,6 +7,8 @@ class Button {
     private width: number;
     private height: number;
     private enabled: boolean;
+    private clickSound: HTMLAudioElement;
+    private readySound: HTMLAudioElement;
 
     constructor(text: string, width: number, height: number) {
         this.text = text;
@@ -16,6 +18,8 @@ class Button {
         this.mesh = gfx.Geometry2Factory.createBox(width, height);
         this.mesh.material.texture = new gfx.Text(text, 90, 10, "Arial", gfx.Color.WHITE);
         this.mesh.material.texture.setMagFilter(false);
+        this.clickSound = new Audio('assets/sfx_click.mp3');
+        this.readySound = new Audio('assets/sfx_ready.wav');
     }
 
     public getText(): string {
@@ -74,11 +78,13 @@ class Button {
         this.enabled = false;
         this.mesh.material.texture = new gfx.Text(this.text, 90, 10, "Arial", gfx.Color.RED);
         this.mesh.material.texture.setMagFilter(false);
+        this.clickSound.play();
         
         if (this.text.toLowerCase() === 'start') {
             setTimeout(() => {
                 this.mesh.material.texture = new gfx.Text(this.text, 90, 10, "Arial", gfx.Color.WHITE);
                 this.mesh.material.texture.setMagFilter(false);
+                this.readySound.play();
                 App.onStart();
             }, 200);
         } else if (this.text.startsWith('DIFFICULTY')) {

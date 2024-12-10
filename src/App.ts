@@ -8,25 +8,35 @@ import { EasyOpponent, MedOpponent, HardOpponent } from './Opponent';
 export class App extends gfx.GfxApp {
     private playerShips: Ship[];
     private aiShips: Ship[];
+    private shipsPlaced: boolean;
+    private selectedShip: Ship | null;
+
     private waterMaterial: gfx.Material2;
     private waterTextures: gfx.Texture[];
+
     private map: Map;
     private title: gfx.Mesh2;
+
     private startButton: Button;
     private difficultyButton: Button;
     private readyButton: Button;
-    private selectedShip: Ship | null;
+
     private hitDecal: gfx.Mesh2;
     private hitTextures: gfx.Texture[];
     private hitTextureIndex: number;
-    private shipsPlaced: boolean;
+    
+    private hitSound: HTMLAudioElement;
+    private clickSound: HTMLAudioElement;
 
     constructor() {
         super();
         this.playerShips = [];
         this.aiShips = [];
+        this.shipsPlaced = false;
+
         this.waterMaterial = new gfx.Material2();
         this.waterTextures = [];
+
         this.title = gfx.Geometry2Factory.createBox(3, 0.5);
         this.startButton = new Button("START", 2, 0.25);
         this.difficultyButton = new Button("DIFFICULTY: EASY", 2, 0.25);
@@ -35,15 +45,20 @@ export class App extends gfx.GfxApp {
         for (let i = 1; i < 22; i++) {
             this.waterTextures.push(new gfx.Texture(`assets/ocean/ocean${i}.png`));
         }
+
         this.map = new Map(10, 10);
         this.selectedShip = null;
+
         this.hitDecal = gfx.Geometry2Factory.createBox(0.1, 0.1);
         this.hitTextures = [];
         this.hitTextureIndex = 0;
         for (let i = 0; i < 17; i++) {
             this.hitTextures.push(new gfx.Texture(`assets/hit/tile${i.toString().padStart(3, '0')}.png`));
         }
-        this.shipsPlaced = false;
+
+        this.hitSound = new Audio('assets/sfx_hit.wav');
+        this.clickSound = new Audio('assets/sfx_click.mp3');
+        
     }
 
     createScene(): void {       
@@ -222,6 +237,8 @@ export class App extends gfx.GfxApp {
     }
 
     onMouseDown(event: MouseEvent): void {
+        //this.clickSound.play();
+        
         // get click tuple in screen coordinates
         const mousePosition = new gfx.Vector2(event.x, event.y);
         const clickX = event.x;
@@ -231,6 +248,13 @@ export class App extends gfx.GfxApp {
         const gridX = clickX / this.map.getX();
         const gridY = clickY / this.map.getY();
 
+        const clickCoordinate = new Coordinate(gridX, gridY);
+        
+        if (this.shipsPlaced) {
+            this.showHitDecal(clickX, clickY);
+            return;
+        }
+        
         // Check if mouse collides with any button mesh
         this.startButton.checkClick(mousePosition);
         this.difficultyButton.checkClick(mousePosition);
@@ -254,15 +278,6 @@ export class App extends gfx.GfxApp {
             this.selectedShip.getMesh().position.set(gridX, gridY);
             this.selectedShip = null; // Deselect after moving
         }
-
-        const clickCoordinate = new Coordinate(gridX, gridY);
-        
-        if (this.shipsPlaced) {
-            this.showHitDecal(clickX, clickY);
-        }
-        
-        //debug
-        console.log(clickCoordinate);
     }
 
     showHitDecal(x: number, y: number): void {
@@ -274,7 +289,12 @@ export class App extends gfx.GfxApp {
 
         this.hitDecal.position.set(x, y);
         this.hitDecal.visible = true;
-        this.scene.add(this.hitDecal);
+        
+        if (!this.hitSound.paused) {
+            this.hitSound.pause();
+            this.hitSound.currentTime = 0;
+        }
+        this.hitSound.play();
     }
 
     onMouseMove(event: MouseEvent): void {
