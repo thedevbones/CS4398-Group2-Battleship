@@ -16,6 +16,10 @@ export class App extends gfx.GfxApp {
     private difficultyButton: Button;
     private readyButton: Button;
     private selectedShip: Ship | null;
+    private hitDecal: gfx.Mesh2;
+    private hitTextures: gfx.Texture[];
+    private hitTextureIndex: number;
+    private shipsPlaced: boolean;
 
     constructor() {
         super();
@@ -33,6 +37,13 @@ export class App extends gfx.GfxApp {
         }
         this.map = new Map(10, 10);
         this.selectedShip = null;
+        this.hitDecal = gfx.Geometry2Factory.createBox(0.1, 0.1);
+        this.hitTextures = [];
+        this.hitTextureIndex = 0;
+        for (let i = 0; i < 17; i++) {
+            this.hitTextures.push(new gfx.Texture(`assets/hit/tile${i.toString().padStart(3, '0')}.png`));
+        }
+        this.shipsPlaced = false;
     }
 
     createScene(): void {       
@@ -54,6 +65,13 @@ export class App extends gfx.GfxApp {
         // Create difficulty button
         this.difficultyButton.setPosition(0, -0.5);
         this.scene.add(this.difficultyButton.getMesh());
+
+        // Initialize hit decal
+        this.hitDecal.material.texture = this.hitTextures[0];
+        this.hitDecal.material.texture.setMagFilter(false);
+        this.hitDecal.layer = -1;
+        this.hitDecal.visible = false;
+        this.scene.add(this.hitDecal);
     }
 
     update(deltaTime: number): void {
@@ -61,7 +79,23 @@ export class App extends gfx.GfxApp {
         const textureIndex = Math.floor((Date.now() / 60) % this.waterTextures.length);
         this.waterMaterial.texture = this.waterTextures[textureIndex];
 
-        // Game logic goes here
+        // Update hit decal
+        if (!this.hitDecal.visible) {
+            return;
+        }
+        // If frames left to animate, update texture
+        if (this.hitTextureIndex < 15) {
+            // Change texture every 3 frames
+            if (Date.now() % 3 === 0) {
+                this.hitTextureIndex++;
+                this.hitDecal.material.texture = this.hitTextures[this.hitTextureIndex];
+            }
+        // If animation is done, hide the decal
+        } else {
+            this.hitDecal.visible = false;
+            this.hitTextureIndex = 0;
+            this.hitDecal.material.texture = this.hitTextures[this.hitTextureIndex];
+        }
     }
 
     loadGame(): void {
@@ -182,6 +216,9 @@ export class App extends gfx.GfxApp {
             targetY -= 0.2;
             this.scene.add(ship.getMesh());
         }
+
+        // Set shipsPlaced to true
+        this.shipsPlaced = true;
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -220,8 +257,24 @@ export class App extends gfx.GfxApp {
 
         const clickCoordinate = new Coordinate(gridX, gridY);
         
+        if (this.shipsPlaced) {
+            this.showHitDecal(clickX, clickY);
+        }
+        
         //debug
         console.log(clickCoordinate);
+    }
+
+    showHitDecal(x: number, y: number): void {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        x = (x / screenWidth) * 2 - 1;
+        y = -(y / screenHeight) * 2 + 1;
+
+        this.hitDecal.position.set(x, y);
+        this.hitDecal.visible = true;
+        this.scene.add(this.hitDecal);
     }
 
     onMouseMove(event: MouseEvent): void {
