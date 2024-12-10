@@ -16,7 +16,7 @@ describe('Coordinate class tests', () => {
     });
     it('Check getTuple', () => {
       const coord = new Coordinate(9, 10);
-      expect(coord.getX()).toBe([9,10]);
+      expect(coord.getTuple()).toEqual([9,10]);
     });
     it('Check isValid returns bool', () => {
       const coord = new Coordinate(10, 10);
@@ -50,4 +50,8 @@ describe('Coordinate class tests', () => {
       const coord = new Coordinate(10, -10);
       expect(coord.isValid(4, 4, 20, 20)).toBe(false);
     });
-});
+    describe('Coordinate class tests', () => {
+      it('Constructor', () => {
+          const coord = new Coordinate(10, 10);
+          expect(coord).toBeInstanceOf(Coordinate);
+      });

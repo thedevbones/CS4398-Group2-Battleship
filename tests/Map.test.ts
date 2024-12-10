@@ -11,7 +11,7 @@ describe('Map Class Tests', () => {
     });
     it('check getY', () => {
       const grid = new Map(10, 15);
-      expect(grid.getX()).toBe(15);
+      expect(grid.getY()).toBe(15);
     });
     it('Check isValid returns bool', () => {
       const grid = new Map(10, 10);

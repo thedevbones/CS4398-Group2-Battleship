@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { EasyOpponent, MedOpponent, HardOpponent } from '../src/Opponent';
 import Coordinate from '../src/Coordinate';
+import Ship from '../src/Ship';
 
-describe('Map Class Tests', () => {
+describe('Opponent Class Tests', () => {
     it('EasyOpp constructor', () => {
         const opp = new EasyOpponent();
         expect(opp).toBeInstanceOf(EasyOpponent);
@@ -35,6 +36,11 @@ describe('Map Class Tests', () => {
         isWithinRadius = true;
       }
       expect(isWithinRadius).toBe(true);
+    });
+    it('EasyOpp placeShips returns array of Ships', () => {
+      const opp = new EasyOpponent();
+      const shipLengths = [1, 2, 3];
+      expect(opp.placeShips(10, 10, shipLengths).every(ship => ship instanceof Ship)).toBe(true);
     });
 
     it('MedOpp constructor', () => {
