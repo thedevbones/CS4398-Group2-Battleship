@@ -13,6 +13,10 @@ class Ship {
         this.hitArray = Array.from({ length: l }, () => Array<number>(w).fill(0));
         this.sunk = false;
         this.mesh = gfx.Geometry2Factory.createBox(l * 0.1, w * 0.1);
+        this.mesh.material = new gfx.Material2();
+        this.mesh.material.texture = new gfx.Texture(`assets/ships/ship-length-${l}.png`);
+        this.mesh.material.texture.setMagFilter(false);
+        this.mesh.material.drawMode = 5;
         this.mesh.layer = -1;
         this.isHorizontal = true;
     }
