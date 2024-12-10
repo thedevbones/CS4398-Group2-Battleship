@@ -10,7 +10,6 @@ describe('Opponent class tests', () => {
   });
   it('EasyOpp nextMove accepts lastHit to be null', () => {
     const opp = new EasyOpponent();
-    expect(opp.nextMove(10, 10, null)).toBeInstanceOf(Coordinate);
-    console.log("Coord:  ", opp.nextMove(10,10,null).getTuple());
+    expect(opp.nextMove(null)).toBeInstanceOf(Coordinate);
   });
 });

@@ -50,8 +50,4 @@ describe('Coordinate class tests', () => {
       const coord = new Coordinate(10, -10);
       expect(coord.isValid(4, 4, 20, 20)).toBe(false);
     });
-    describe('Coordinate class tests', () => {
-      it('Constructor', () => {
-          const coord = new Coordinate(10, 10);
-          expect(coord).toBeInstanceOf(Coordinate);
-      });
+});
