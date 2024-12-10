@@ -18,7 +18,7 @@ abstract class Opponent {
 
 export class EasyOpponent extends Opponent {
   // chooses a random spot on the map to attack first
-  // if hit, choose random spot within 4x4 grid to attack
+  // if hit, choose random spot within 5x5 grid to attack
   // continue until sunk
   // resume searching
   
@@ -76,7 +76,7 @@ export class EasyOpponent extends Opponent {
 
 export class MedOpponent extends Opponent {
     // chooses a random spot on the map to attack first
-    // if hit, choose random spot within 2x2 grid to attack
+    // if hit, choose random spot within 3x3 grid to attack
     // continue until sunk
     // resume searching
 
@@ -95,8 +95,8 @@ export class MedOpponent extends Opponent {
             xCoord = Math.floor(Math.random() * (x + 1));    // get ranndom int from 0 -> x
             yCoord = Math.floor(Math.random() * (y + 1));    // get random int from 0 -> y
         } else if (lastHit instanceof Coordinate) {          // if got a hit, target ship
-            xCoord = lastHit.getX() - (Math.floor(Math.random() * (((x+2)-(x-2)+1) + (x-2)))); 
-            yCoord = lastHit.getX() - (Math.floor(Math.random() * (((y+2)-(y-2)+1) + (y-2)))); 
+            xCoord = lastHit.getX() - (Math.floor(Math.random() * (((x+1)-(x-1)+1) + (x-1)))); 
+            yCoord = lastHit.getX() - (Math.floor(Math.random() * (((y+1)-(y-1)+1) + (y-1)))); 
         }
 
         // clamp to size of map

@@ -15,7 +15,7 @@ describe('Map Class Tests', () => {
     });
     it('Check isValid returns bool', () => {
       const grid = new Map(10, 10);
-      expect(grid.isValid()).toBe('boolean');
+      expect(grid.isValid()).toBeTypeOf('boolean');
     });
     it('Check isValid returns true if within params', () => {
       const grid = new Map(10, 10);
