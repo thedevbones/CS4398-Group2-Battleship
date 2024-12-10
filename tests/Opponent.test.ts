@@ -26,7 +26,7 @@ describe('Map Class Tests', () => {
       }
       expect(isWithinRadius).toBe(true);
     });
-    it('EasyOpp nextMove Y value within 3-tile search radius of last hit', () => {
+    it('EasyOpp nextMove Y value within 5-tile search radius of last hit', () => {
       const opp = new EasyOpponent();
       const lastHit = opp.nextMove(10, 10, null);
       const next = opp.nextMove(10, 10, lastHit);

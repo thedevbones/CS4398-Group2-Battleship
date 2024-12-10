@@ -1,44 +1,47 @@
 import * as gfx from 'gophergfx';
+import Coordinate from './Coordinate'
 class Ship {
     private length: number;
     private width: number;
-    private hitArray: number[][];
+    private hitArray: number[];
+    private locationArray: Coordinate[];
     private sunk: boolean;
     private mesh: gfx.Mesh2;
     private isHorizontal: boolean;
 
-    constructor(l:number, w:number) {
-        this.length = l;
-        this.width = w;
-        this.hitArray = Array.from({ length: l }, () => Array<number>(w).fill(0));
-        this.sunk = false;
-        this.mesh = gfx.Geometry2Factory.createBox(l * 0.1, w * 0.1);
-        this.mesh.layer = -1;
-        this.isHorizontal = true;
-    }
+
+    constructor(l:number, w:number, coordinates:Coordinate[]) {
+      this.length = l;
+      this.width = w;
+      this.hitArray = Array<number>(l*w).fill(0);    // initialize all hit indicators in array to 0
+      this.locationArray = [...coordinates];          // copy incoming aray for safekeeping
+      this.sunk = false;
+      this.mesh = gfx.Geometry2Factory.createBox(l * 0.1, w * 0.1);
+      this.mesh.layer = -1;
+      this.isHorizontal = true;
+  }
 
     getMesh(): gfx.Mesh2 {
         return this.mesh;
     }
 
-    hit(x:number, y:number): void {
-        this.hitArray[x][y] = 1;
+    hit(coord: Coordinate): void {
+        for (let i in this.locationArray) {
+          if (this.locationArray[i].getTuple() == coord.getTuple()) {
+            // if hit coordinate matches a location coordinate, change hitArray indicator
+            this.hitArray[i] = 1;
+          }
+        }
     }
 
     isSunk(): boolean {
         let sunkChecker = true;
 
         // iterate through columns
-        for (let i in this.hitArray) {
-
-            // iterate through column i's rows
-            for (let j in this.hitArray) {
-
-                // if any square is not hit, ship is not sunk
-                if (this.hitArray[i][j] == 0) {
-                    sunkChecker = false;
-                }
-            }
+        for (let i in this.hitArray) {    // iterate through hit array
+          if (this.hitArray[i] == 0) {
+            sunkChecker = false;          // if any location is not hit, ship is not sunk
+          }
         }
         return sunkChecker;
     }
