@@ -289,15 +289,16 @@ export class App extends gfx.GfxApp {
           }
         }
 
-        if (hit == true) {
-          this.showHitDecal(clickX, clickY);
-          this.hitSound.play();
-        }
         
         if (!this.hitSound.paused) {
             this.hitSound.pause();
             this.hitSound.currentTime = 0;
         }
+
+        if (hit == true) {
+            this.showHitDecal(clickX, clickY);
+            this.hitSound.play();
+          }
         
     }
 
