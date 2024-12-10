@@ -229,7 +229,7 @@ export class App extends gfx.GfxApp {
             ship.getMesh().position.set(0.8, targetY);
             ship.getMesh().material.color = gfx.Color.RED;
             targetY -= 0.2;
-            this.scene.add(ship.getMesh());
+            //this.scene.add(ship.getMesh());
         }
 
         // Set shipsPlaced to true
