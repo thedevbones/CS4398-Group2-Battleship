@@ -34,6 +34,8 @@ export class EasyOpponent extends Opponent {
       return random;
     }
 
+    
+
     nextMove(maxX: number, maxY: number, lastHit: Coordinate | null): Coordinate {
       let xCoord = 2;
       let yCoord = 2;
@@ -189,6 +191,11 @@ export class MedOpponent extends Opponent {
       super();
     }
 
+    getRandomValInRange(max: number, min: number): number {
+      const random = Math.floor(Math.random() * ((max-min+1) + min)); 
+      return random;
+    }
+
     nextMove(maxX: number, maxY: number, lastHit: Coordinate | null): Coordinate {
       let xCoord = 0;
       let yCoord = 0;
@@ -342,6 +349,11 @@ export class HardOpponent extends Opponent {
 
     constructor() {
       super();
+    }
+
+    getRandomValInRange(max: number, min: number): number {
+      const random = Math.floor(Math.random() * ((max-min+1) + min)); 
+      return random;
     }
 
     nextMove(maxX: number, maxY: number, lastHit: Coordinate | null): Coordinate {
