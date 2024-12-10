@@ -1,4 +1,5 @@
 import Coordinate from './Coordinate'
+import Ship from './Ship'
 
 abstract class Opponent {
     protected moves: Coordinate[];
@@ -7,18 +8,170 @@ abstract class Opponent {
       this.moves = [];  // Initialize in the constructor
     }
 
-    /* nextMove
-        Params:
-          x   number representing width of map grid in unites
-          y   number representing height of map grid in units
-    */
-    abstract nextMove(x: number, y: number, lastHit: Coordinate | null): Coordinate;
+    // Concrete implementation of nextMove
+    nextMove(lastHit: Coordinate | null): Coordinate {
+      let newMove: Coordinate | null = null;
+
+      // If lastHit is null, generate a random Coordinate
+      if (lastHit === null) {
+          newMove = this.generateRandomCoordinate();
+      } else {
+          // If lastHit is not null, generate a new move around it
+          newMove = this.generateNearbyCoordinate(lastHit);
+      }
+
+      // Ensure the new coordinate is not a duplicate of one already in moves[]
+      while (this.isDuplicate(newMove)) {
+          if (lastHit === null) {
+              newMove = this.generateRandomCoordinate();
+          } else {
+              newMove = this.generateNearbyCoordinate(lastHit);
+          }
+      }
+
+      return newMove!;
+  }
+
+  // Generates a random Coordinate, assuming the grid is within certain bounds (e.g., 0-9 for both X and Y)
+  protected generateRandomCoordinate(): Coordinate {
+      const x = Math.floor(Math.random() * 10);
+      const y = Math.floor(Math.random() * 10);
+      return new Coordinate(x, y);
+  }
+
+  protected getRandomValInRange(min: number, max: number): number {
+    const x = Math.floor(Math.random() * (max - min + 1)) + min;
+    return x;
+}
+
+  // Generates a coordinate near the lastHit, within a range of 2 units up/down in both x and y directions
+  protected generateNearbyCoordinate(lastHit: Coordinate): Coordinate {
+      const x = lastHit.getX();
+      const y = lastHit.getY();
+
+      // Generate new coordinates within a range of 2 above or below
+      let newX = x + (Math.floor(Math.random() * 5) - 2); // Range [-2, 2]
+      let newY = y + (Math.floor(Math.random() * 5) - 2); // Range [-2, 2]
+
+      // Ensure the new coordinates are within the valid grid bounds
+      newX = Math.max(0, Math.min(newX, 9)); // Assuming the grid size is 0-9
+      newY = Math.max(0, Math.min(newY, 9)); // Assuming the grid size is 0-9
+
+      return new Coordinate(newX, newY);
+  }
+
+  // Checks if the new coordinate is already in the moves[] array
+  protected isDuplicate(newMove: Coordinate): boolean {
+      for (const move of this.moves) {
+          if (move.getTuple()[0] === newMove.getTuple()[0] && move.getTuple()[1] === newMove.getTuple()[1]) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+    placeShips(maxX:number, maxY:number, lengths:number[]): Ship[] {
+      let shipArray: Ship[] = [];
+      let coordArray: Coordinate[] = [];
+      for (let i in lengths)  {
+        // don't use outside portion of map
+        const minXPlacement = 0+Math.floor((maxX/5)+1);
+        const maxXPlacement = maxX-Math.floor((maxX/5)+1);
+        const minYPlacement = 0+Math.floor((maxY/5)+1);
+        const maxYPlacement = maxY-Math.floor((maxY/5)+1);
+
+
+        let xCoord = this.getRandomValInRange(minXPlacement, maxXPlacement);
+        let yCoord = this.getRandomValInRange(minYPlacement, maxYPlacement);
+
+        coordArray.push(new Coordinate(xCoord,yCoord));
+
+        if (lengths[i] > 1) {
+          // 0 = horizontal direction, 1 = vertical direction
+          const axisDecider = this.getRandomValInRange(0,1);
+
+          for (let k = 0; k < lengths[i]; k++) {          // repeat for full length of ship [i]
+
+            // 0 = left, 1 = right
+            const directionDecider = this.getRandomValInRange(0,1);
+
+            // find coordinate in coordArray with smallest value (x or y)
+            let minCoord = new Coordinate(maxX, maxY);    // initialize to max values
+
+            // find coordinate in coordArray with largest value (x or y)
+            let maxCoord = new Coordinate(0, 0);          // initialize to min values
+
+            if (axisDecider == 0) {     // horizontal
+              
+            // find current max and min values on x axis
+              for (let j in coordArray) {
+                if (coordArray[j].getX() < minCoord.getX()) {
+                  minCoord = coordArray[j];
+                }
+                if (coordArray[j].getX() > maxCoord.getX()) {
+                  maxCoord = coordArray[j];
+                }
+              }
+
+
+              if (directionDecider == 0) {
+                xCoord = minCoord.getX()-1;
+              } else if (directionDecider == 1) {
+                xCoord = maxCoord.getX()+1;
+              }
+
+            } else if (axisDecider == 1) {    // vertical
+
+              // find current max and min values on y axis
+              for (let j in coordArray) {
+                if (coordArray[j].getY() < minCoord.getY()) {
+                  minCoord = coordArray[j];
+                }
+                if (coordArray[j].getY() > maxCoord.getY()) {
+                  maxCoord = coordArray[j];
+                }
+              }
+
+              if (directionDecider == 0) {
+                xCoord = minCoord.getY()-1;
+              } else if (directionDecider == 1) {
+                xCoord = maxCoord.getX()+1;
+              }
+
+            }
+
+            // validate new coordinate
+            let validChecker = true;
+
+            for (let j in coordArray) {
+              if (!coordArray[j].isValid(minXPlacement, minYPlacement, minXPlacement, maxXPlacement)) {
+                validChecker = false;
+              }
+
+              // check for duplicate in array of this ship's coordinates
+              if (coordArray[j].getX() == xCoord && coordArray[j].getY() == yCoord) {
+                validChecker = false;
+              }
+            }
+            
+            if (validChecker == true) {
+              coordArray.push(new Coordinate(xCoord,yCoord));
+            } else {
+              k--;      // try to place again
+            }
+          }
+        }
+
+        shipArray.push(new Ship(lengths[i], 1, coordArray));
+      }
+      return shipArray;
+    }
 
 }
 
 export class EasyOpponent extends Opponent {
   // chooses a random spot on the map to attack first
-  // if hit, choose random spot within 4x4 grid to attack
+  // if hit, choose random spot within 5x5 grid to attack
   // continue until sunk
   // resume searching
   
@@ -26,109 +179,19 @@ export class EasyOpponent extends Opponent {
       super();
     }
 
-    nextMove(x: number, y: number, lastHit: Coordinate | null): Coordinate {
-      let xCoord = 0;
-      let yCoord = 0;
-      let loop = true;
-
-      while (loop == true) {
-        // random search if no target ship has been found
-        if (this.moves.length == 0 || lastHit == null) {
-            xCoord = Math.floor(Math.random() * (x + 1));    // get ranndom int from 0 -> x
-            yCoord = Math.floor(Math.random() * (y + 1));    // get random int from 0 -> y
-        } else if (lastHit instanceof Coordinate) {          // if got a hit, target ship
-            xCoord = lastHit.getX() - (Math.floor(Math.random() * (((x+4)-(x-4)+1) + (x-4)))); 
-            yCoord = lastHit.getX() - (Math.floor(Math.random() * (((y+4)-(y-4)+1) + (y-4)))); 
-        }
-
-        // clamp to size of map
-        if (xCoord < 0) {
-          xCoord = 0;
-        } else if (xCoord > x) {
-          xCoord = x;
-        }
-        if (yCoord < 0) {
-          yCoord = 0;
-        } else if (yCoord > y) {
-          yCoord = 0;
-        }
-
-        // check if it's the location of a previous move
-        if (this.moves.length == 0) {
-          loop = false;             // if no moves have been made, must be valid
-        } else {
-          // for each move made, compare coordinates
-          for (let i = 0; i < this.moves.length; i++) {
-            if (xCoord != this.moves[i].getX() && yCoord != this.moves[i].getY()) {
-              loop = false;         // if this move has been made before, choose another
-            }
-          }
-        }
-      }
-
-      const newCoord = new Coordinate(xCoord,yCoord);
-      this.moves.push(newCoord);
-      return newCoord;
-    }
 
     
 }
 
 export class MedOpponent extends Opponent {
     // chooses a random spot on the map to attack first
-    // if hit, choose random spot within 2x2 grid to attack
+    // if hit, choose random spot within 3x3 grid to attack
     // continue until sunk
     // resume searching
 
     constructor() {
       super();
     }
-
-    nextMove(x: number, y: number, lastHit: Coordinate | null): Coordinate {
-      let xCoord = 0;
-      let yCoord = 0;
-      let loop = true;
-
-      while (loop == true) {
-        // random search if no target ship has been found
-        if (this.moves.length == 0 || lastHit == null) {
-            xCoord = Math.floor(Math.random() * (x + 1));    // get ranndom int from 0 -> x
-            yCoord = Math.floor(Math.random() * (y + 1));    // get random int from 0 -> y
-        } else if (lastHit instanceof Coordinate) {          // if got a hit, target ship
-            xCoord = lastHit.getX() - (Math.floor(Math.random() * (((x+2)-(x-2)+1) + (x-2)))); 
-            yCoord = lastHit.getX() - (Math.floor(Math.random() * (((y+2)-(y-2)+1) + (y-2)))); 
-        }
-
-        // clamp to size of map
-        if (xCoord < 0) {
-          xCoord = 0;
-        } else if (xCoord > x) {
-          xCoord = x;
-        }
-        if (yCoord < 0) {
-          yCoord = 0;
-        } else if (yCoord > y) {
-          yCoord = 0;
-        }
-
-        // check if it's the location of a previous move
-        if (this.moves.length == 0) {
-          loop = false;             // if no moves have been made, must be valid
-        } else {
-          // for each move made, compare coordinates
-          for (let i = 0; i < this.moves.length; i++) {
-            if (xCoord != this.moves[i].getX() && yCoord != this.moves[i].getY()) {
-              loop = false;         // if this move has been made before, choose another
-            }
-          }
-        }
-      }
-
-      const newCoord = new Coordinate(xCoord,yCoord);
-      this.moves.push(newCoord);          // add to array of previous moves
-      return newCoord;
-    }
-
     
 }
 
@@ -144,75 +207,5 @@ export class HardOpponent extends Opponent {
     constructor() {
       super();
     }
-
-    nextMove(x: number, y: number, lastHit: Coordinate | null): Coordinate {
-      let xCoord = 0;
-      let yCoord = 0;
-      let loop = true;
-
-      while (loop == true) {
-        // random search if no target ship has been found
-        if (this.moves.length == 0 || lastHit == null) {
-
-            xCoord = Math.floor(Math.random() * (x + 1));    // get ranndom int from 0 -> x
-            yCoord = Math.floor(Math.random() * (y + 1));    // get random int from 0 -> y
-
-        } else if (lastHit instanceof Coordinate) {          // if got a hit, target ship
-
-          // decide which axis to attack: x if aD == 0, y if aD == 1
-          const axisDecider = Math.floor(Math.random() * (1-0 + 1) + 0);
-
-          // decide which tile to attack on axis: left/down if dD == 0, up/right if dD == 1
-          const directionDecider = Math.floor(Math.random() * (1-0 + 1) + 0);
-
-          if (axisDecider == 0) {
-            // attack horizontally adjacent tiles
-            yCoord = lastHit.getY();      // copy y to get adjacent tiles
-            if (directionDecider == 0) {
-              xCoord = lastHit.getX() - 1;      // attack left
-            } else if (directionDecider == 1) {
-              xCoord = lastHit.getX() + 1;      // attack right
-            }
-          } else if (axisDecider == 1) {
-            // attack vertically adjacent tiles
-            xCoord = lastHit.getX();    // copy x to get adjacent tiles
-            if (directionDecider == 0) {
-              yCoord = lastHit.getY() - 1;      // attack below
-            } else if (directionDecider == 1) {
-              yCoord = lastHit.getY() + 1;      // attack above
-            }
-          }
-        }
-
-        // clamp to size of map
-        if (xCoord < 0) {
-          xCoord = 0;
-        } else if (xCoord > x) {
-          xCoord = x;
-        }
-        if (yCoord < 0) {
-          yCoord = 0;
-        } else if (yCoord > y) {
-          yCoord = 0;
-        }
-
-        // check if it's the location of a previous move
-        if (this.moves.length == 0) {
-          loop = false;             // if no moves have been made, must be valid
-        } else {
-          // for each move made, compare coordinates
-          for (let i = 0; i < this.moves.length; i++) {
-            if (xCoord != this.moves[i].getX() && yCoord != this.moves[i].getY()) {
-              loop = false;         // if this move has been made before, choose another
-            }
-          }
-        }
-      }
-
-      const newCoord = new Coordinate(xCoord,yCoord);
-      this.moves.push(newCoord);          // add to array of previous moves
-      return newCoord;
-    }
-
     
 }

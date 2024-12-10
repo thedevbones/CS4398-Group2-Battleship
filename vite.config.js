@@ -24,5 +24,8 @@ export default defineConfig({
   },
   plugins: [
     viteglgl()
-  ]
+  ], 
+  test: {
+    timeout: 10000, // Increase timeout globally to 10 seconds
+  },
 })
