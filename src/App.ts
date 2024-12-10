@@ -146,18 +146,14 @@ export class App extends gfx.GfxApp {
         // Create player ships
         let targetY = 0.25;
         for (let length of shipLengths) {
-            const playerShip = new Ship(length, 1); // Assuming width is always 1
+            const playerShip = new Ship(length, 1, [new Coordinate(5,5)]); // Assuming width is always 1
             this.playerShips.push(playerShip);
             playerShip.getMesh().position.set(-0.8, targetY);
             targetY -= 0.2;
             this.scene.add(playerShip.getMesh());
         }
 
-        // Create enemy ships
-        for (let length of shipLengths) {
-            const enemyShip = new Ship(length, 1); // Assuming width is always 1
-            this.aiShips.push(enemyShip);
-        }
+        this.aiShips = opponent.placeShips(this.map.getX(), this.map.getY(), shipLengths);
 
         // Create grid and grid values
         const grid = new gfx.Node2();

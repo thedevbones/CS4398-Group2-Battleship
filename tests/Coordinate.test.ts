@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest';
 import Coordinate from '../src/Coordinate';
 
 describe('Coordinate class tests', () => {
-    it('Constructor accepts input', () => {
+    it('Constructor', () => {
         const coord = new Coordinate(10, 10);
+        expect(coord).toBeInstanceOf(Coordinate);
     });
     it('Check getX', () => {
       const coord = new Coordinate(11, 10);
@@ -15,11 +16,11 @@ describe('Coordinate class tests', () => {
     });
     it('Check getTuple', () => {
       const coord = new Coordinate(9, 10);
-      expect(coord.getX()).toBe([9,10]);
+      expect(coord.getTuple()).toEqual([9,10]);
     });
     it('Check isValid returns bool', () => {
       const coord = new Coordinate(10, 10);
-      expect(coord.isValid(4, 4, 20, 10)).toBe('boolean');
+      expect(coord.isValid(4, 4, 20, 10)).toBeTypeOf('boolean');
     });
     it('Check isValid returns true if within params', () => {
       const coord = new Coordinate(10, 10);
@@ -49,4 +50,8 @@ describe('Coordinate class tests', () => {
       const coord = new Coordinate(10, -10);
       expect(coord.isValid(4, 4, 20, 20)).toBe(false);
     });
-});
+    describe('Coordinate class tests', () => {
+      it('Constructor', () => {
+          const coord = new Coordinate(10, 10);
+          expect(coord).toBeInstanceOf(Coordinate);
+      });
