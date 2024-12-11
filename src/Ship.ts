@@ -4,7 +4,7 @@ class Ship {
     private length: number;
     private width: number;
     private hitArray: number[];
-    private locationArray: Coordinate[];
+    public locationArray: Coordinate[];
     private sunk: boolean;
     private mesh: gfx.Mesh2;
     private isHorizontal: boolean;

@@ -9,6 +9,7 @@ export class App extends gfx.GfxApp {
     private playerShips: Ship[];
     private aiShips: Ship[];
     private shipsPlaced: boolean;
+    private menuDone: boolean;
     private selectedShip: Ship | null;
 
     private waterMaterial: gfx.Material2;
@@ -33,6 +34,7 @@ export class App extends gfx.GfxApp {
         this.playerShips = [];
         this.aiShips = [];
         this.shipsPlaced = false;
+        this.menuDone = false;
 
         this.waterMaterial = new gfx.Material2();
         this.waterTextures = [];
@@ -117,6 +119,7 @@ export class App extends gfx.GfxApp {
         // Remove buttons
         this.startButton.getMesh().remove();
         this.difficultyButton.getMesh().remove();
+        this.menuDone = true;
 
         // Create ready button
         this.readyButton.setStatus(true);
@@ -153,7 +156,7 @@ export class App extends gfx.GfxApp {
             this.scene.add(playerShip.getMesh());
         }
 
-        this.aiShips = opponent.placeShips(this.map.getX(), this.map.getY(), shipLengths);
+        this.aiShips = [new Ship (1, 1, [new Coordinate(3, 4)]), new Ship (2, 1, [new Coordinate(2, 7), new Coordinate(2, 6)]),  new Ship (3, 1, [new Coordinate(1, 1), new Coordinate(1,2), new Coordinate(1,3)]),  new Ship (4, 1, [new Coordinate(8,9), new Coordinate(8,9), new Coordinate(7,9), new Coordinate(6,9)]), new Ship (5, 1, [new Coordinate(4, 5), new Coordinate(5, 5), new Coordinate (6, 5), new Coordinate (7,5), new Coordinate(8,5)])];
 
         // Create grid and grid values
         const grid = new gfx.Node2();
@@ -225,7 +228,7 @@ export class App extends gfx.GfxApp {
             ship.getMesh().position.set(0.8, targetY);
             ship.getMesh().material.color = gfx.Color.RED;
             targetY -= 0.2;
-            this.scene.add(ship.getMesh());
+            //this.scene.add(ship.getMesh());
         }
 
         // Set shipsPlaced to true
@@ -246,15 +249,16 @@ export class App extends gfx.GfxApp {
 
         const clickCoordinate = new Coordinate(gridX, gridY);
         
-        if (this.shipsPlaced) {
-            this.showHitDecal(clickX, clickY);
+        // Check if mouse collides with any button mesh
+        if (!this.menuDone && !this.shipsPlaced) {
+            this.startButton.checkClick(mousePosition);
+            this.difficultyButton.checkClick(mousePosition);
             return;
         }
-        
-        // Check if mouse collides with any button mesh
-        this.startButton.checkClick(mousePosition);
-        this.difficultyButton.checkClick(mousePosition);
-        this.readyButton.checkClick(mousePosition);
+        if (!this.shipsPlaced) {
+            this.readyButton.checkClick(mousePosition);
+            return;
+        }
 
         // Check if a ship is clicked
         for (let ship of app.playerShips) {
@@ -274,6 +278,28 @@ export class App extends gfx.GfxApp {
             this.selectedShip.getMesh().position.set(gridX, gridY);
             this.selectedShip = null; // Deselect after moving
         }
+
+        let hit = false;
+        for (let i in this.aiShips) {
+          this.aiShips[i].hit(clickCoordinate);
+          for (let j in this.aiShips[i].locationArray) {
+            if (this.aiShips[i].locationArray[j].getTuple() == clickCoordinate.getTuple()) {
+              hit = true;
+            }
+          }
+        }
+
+        
+        if (!this.hitSound.paused) {
+            this.hitSound.pause();
+            this.hitSound.currentTime = 0;
+        }
+
+        if (hit == true) {
+            this.showHitDecal(clickX, clickY);
+            this.hitSound.play();
+          }
+        
     }
 
     showHitDecal(x: number, y: number): void {
@@ -285,12 +311,6 @@ export class App extends gfx.GfxApp {
 
         this.hitDecal.position.set(x, y);
         this.hitDecal.visible = true;
-        
-        if (!this.hitSound.paused) {
-            this.hitSound.pause();
-            this.hitSound.currentTime = 0;
-        }
-        this.hitSound.play();
     }
 
     onMouseMove(event: MouseEvent): void {
